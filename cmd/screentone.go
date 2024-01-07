@@ -3,7 +3,6 @@ package cmd
 import (
 	"errors"
 	"os"
-	"runtime"
 
 	"github.com/MangaTools/utmanga/dto"
 	"github.com/MangaTools/utmanga/dto/validator"
@@ -19,7 +18,7 @@ var (
 		PreRunE: func(cmd *cobra.Command, args []string) error {
 			return errors.Join(
 				validator.ValidateExecutorSettings(screentoneExecutorSettings),
-				validator.ValidateScreentone(screentoneSettings))
+				validator.ValidateScreentoneSettings(screentoneSettings))
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			screentoner := screentone.NewScreentoner(screentoneSettings)
@@ -33,7 +32,7 @@ var (
 		Use:   "pipe",
 		Short: "This command starts processing of overlaying a screentone of a single file from the stdin stream and outputs to stdout stream.",
 		PreRunE: func(cmd *cobra.Command, args []string) error {
-			return validator.ValidateScreentone(screentoneSettings)
+			return validator.ValidateScreentoneSettings(screentoneSettings)
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			screentoner := screentone.NewScreentoner(screentoneSettings)
@@ -55,16 +54,5 @@ func init() {
 		"Max dot size in pixels. Value must be in range [2;100]. This flag is responsible for how big your screentone will be.")
 	screentoneCmd.MarkFlagRequired("dot_size")
 
-	screentoneCmd.Flags().IntVarP(&screentoneExecutorSettings.MaxGoroutines, "threads", "t", runtime.NumCPU(),
-		"Number of simultaneously processed images. The default value is equal to the number of logical processor cores.")
-
-	screentoneCmd.Flags().StringVarP(&screentoneExecutorSettings.InputPath, "input", "i", "",
-		"The path to the folder with the images. Required.")
-	screentoneCmd.MarkFlagRequired("input")
-
-	screentoneCmd.Flags().BoolVarP(&screentoneExecutorSettings.Recursive, "recursive", "r", false,
-		"Recursive image search.")
-	screentoneCmd.Flags().StringVarP(&screentoneExecutorSettings.OutputPath, "out", "o", "",
-		`Path to the folder with final images (if the folder does not exist, it will be created).
-	If not specified, it is written to the input folder. The output will be .png files. If there are already files with the same name in the folder, the files are overwritten.`)
+	addExecutorFlagsToCommand(screentoneCmd, &screentoneExecutorSettings)
 }
