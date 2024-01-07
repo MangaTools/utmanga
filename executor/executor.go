@@ -31,7 +31,7 @@ func NewExecutor(settings dto.ExecutorSettings, executionFunc ExecutionFunc) *Ex
 }
 
 func (e *Executor) Execute() error {
-	inputFolder, err := filepath.Abs(e.settings.InputFolder)
+	inputFolder, err := filepath.Abs(e.settings.InputPath)
 	if err != nil {
 		return fmt.Errorf("get absolute path of input folder: %w", err)
 	}
@@ -41,7 +41,7 @@ func (e *Executor) Execute() error {
 		return err
 	}
 
-	outputFolder, err := filepath.Abs(e.settings.OutputFolder)
+	outputFolder, err := filepath.Abs(e.settings.OutputPath)
 	if err != nil {
 		return fmt.Errorf("get absolute path of output folder: %w", err)
 	}
