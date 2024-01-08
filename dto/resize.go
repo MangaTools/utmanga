@@ -1,15 +1,14 @@
 package dto
 
 const (
-	ResizeModeLanczos           = "lanczos"
-	ResizeModeCatmullRom        = "catmullRom"
-	ResizeModeMitchellNetravali = "mitchell_netravali"
-	ResizeModeLinear            = "linear"
-	ResizeModeBox               = "box"
-	ResizeModeNearestNeighbor   = "nearest_neighbor"
+	ResizeModeBox             = "box"
+	ResizeModeLanczos         = "lanczos"
+	ResizeModeCubic           = "cubic"
+	ResizeModeLinear          = "linear"
+	ResizeModeNearestNeighbor = "nearest_neighbor"
 )
 
-var ResizeModeList = []string{ResizeModeLanczos, ResizeModeCatmullRom, ResizeModeMitchellNetravali, ResizeModeLinear, ResizeModeBox, ResizeModeNearestNeighbor}
+var ResizeModeList = []string{ResizeModeLanczos, ResizeModeCubic, ResizeModeLinear, ResizeModeBox, ResizeModeNearestNeighbor}
 
 type ResizeSettings struct {
 	Mode string

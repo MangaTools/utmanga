@@ -6,21 +6,20 @@ import (
 	"math"
 
 	"github.com/MangaTools/utmanga/dto"
-	"github.com/disintegration/imaging"
+	"github.com/disintegration/gift"
 )
 
-var modeToResampleFilter = map[string]imaging.ResampleFilter{
-	dto.ResizeModeBox:               imaging.Box,
-	dto.ResizeModeCatmullRom:        imaging.CatmullRom,
-	dto.ResizeModeLanczos:           imaging.Lanczos,
-	dto.ResizeModeLinear:            imaging.Linear,
-	dto.ResizeModeMitchellNetravali: imaging.MitchellNetravali,
-	dto.ResizeModeNearestNeighbor:   imaging.NearestNeighbor,
+var modeToResampleFilter = map[string]gift.Resampling{
+	dto.ResizeModeBox:             gift.BoxResampling,
+	dto.ResizeModeCubic:           gift.CubicResampling,
+	dto.ResizeModeLanczos:         gift.LanczosResampling,
+	dto.ResizeModeLinear:          gift.LinearResampling,
+	dto.ResizeModeNearestNeighbor: gift.NearestNeighborResampling,
 }
 
 type Resizer struct {
 	settings dto.ResizeSettings
-	filter   imaging.ResampleFilter
+	filter   gift.Resampling
 }
 
 func NewResizer(settings dto.ResizeSettings) *Resizer {
@@ -41,17 +40,25 @@ func (r *Resizer) Execute(img image.Image) (image.Image, error) {
 	targetHeight := r.getTaretHeight(bounds)
 	stepValue := (targetHeight - bounds.Dy()) / r.settings.Steps
 
+	g := gift.New()
+
 	// NOTE(shadream): evaluate step - 1 resize and then resize to target value outside of loop to more accurate final size.
 	for i := 1; i < r.settings.Steps; i++ {
 		newHeight := bounds.Dy() + (stepValue * i)
-		img = imaging.Resize(img, 0, newHeight, r.filter)
+		g.Add(gift.Resize(0, newHeight, r.filter))
 	}
 
 	if r.settings.TargetWidth != 0 {
-		img = imaging.Resize(img, r.settings.TargetWidth, 0, r.filter)
+		g.Add(gift.Resize(r.settings.TargetWidth, 0, r.filter))
 	} else {
-		img = imaging.Resize(img, 0, targetHeight, r.filter)
+		g.Add(gift.Resize(0, targetHeight, r.filter))
 	}
+
+	g.Add(gift.Grayscale())
+
+	resultImage := image.NewGray(g.Bounds(img.Bounds()))
+
+	g.Draw(resultImage, img)
 
 	return img, nil
 }
