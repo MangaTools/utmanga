@@ -3,15 +3,18 @@ package level
 import (
 	"image"
 	"image/color"
+	"image/png"
 	"math"
+	"os"
+	"path/filepath"
 
 	"github.com/MangaTools/utmanga/dto"
 	"github.com/disintegration/gift"
 )
 
 const (
-	diapasonBlackBlur          = float32(1)
-	diapasonBlackBlurThreshold = uint8(230)
+	diapasonBlackBlur          = float32(0.7)
+	diapasonBlackBlurThreshold = uint8(250)
 
 	diapasonWhiteBlur = 3
 )
@@ -53,6 +56,8 @@ func (l *Leveler) Execute(img image.Image) (image.Image, error) {
 		}
 	}
 
+	tempFile(resultImage, "level.png")
+
 	l.executeDiapasonBlack(resultImage)
 	l.executeDiapasonWhite(resultImage, grayImage)
 
@@ -77,12 +82,30 @@ func (l *Leveler) executeDiapasonBlack(grayImg *image.Gray) {
 		}
 	}
 
+	tempFile(blackMask, "black.png")
+
 	g := gift.New(gift.GaussianBlur(diapasonBlackBlur))
 
 	blurredMask := image.NewGray(g.Bounds(blackMask.Rect))
 	g.Draw(blurredMask, blackMask)
 
+	tempFile(blurredMask, "blur.png")
+
 	blackPixel := color.Gray{Y: 0}
+	whitePixel := color.Gray{Y: 255}
+
+	for y := 0; y < blurredMask.Bounds().Dy(); y++ {
+		for x := 0; x < blurredMask.Bounds().Dx(); x++ {
+			value := blurredMask.GrayAt(x, y).Y
+			if value >= diapasonBlackBlurThreshold {
+				blackMask.SetGray(x, y, whitePixel)
+			} else {
+				blackMask.SetGray(x, y, blackPixel)
+			}
+		}
+	}
+
+	tempFile(blackMask, "blur_out.png")
 
 	for y := 0; y < blurredMask.Bounds().Dy(); y++ {
 		for x := 0; x < blurredMask.Bounds().Dx(); x++ {
@@ -116,4 +139,12 @@ func (l *Leveler) executeDiapasonWhite(resultImage *image.Gray, sourceGrayImage 
 			}
 		}
 	}
+}
+
+func tempFile(img image.Image, name string) {
+	p := filepath.Join(`R:\OUTPUT\utmanga`, name)
+	file, _ := os.Create(p)
+	defer file.Close()
+
+	png.Encode(file, img)
 }
