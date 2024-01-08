@@ -56,11 +56,11 @@ func (r *Resizer) Execute(img image.Image) (image.Image, error) {
 
 	g.Add(gift.Grayscale())
 
-	resultImage := image.NewGray(g.Bounds(img.Bounds()))
+	resultImage := image.NewGray(g.Bounds(bounds))
 
 	g.Draw(resultImage, img)
 
-	return img, nil
+	return resultImage, nil
 }
 
 func (r *Resizer) getTaretHeight(bounds image.Rectangle) int {

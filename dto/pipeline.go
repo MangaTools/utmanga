@@ -17,27 +17,46 @@ type PipelineFileSettings struct {
 }
 
 func (p *PipelineFileSettings) UnmarshalJSON(b []byte) error {
-	var items []pipelineItem
-	if err := json.Unmarshal(b, &items); err != nil {
+	settings := struct {
+		Items []pipelineItem `json:"items"`
+	}{}
+	if err := json.Unmarshal(b, &settings); err != nil {
 		return fmt.Errorf("parse PipelineFileSetting array: %w", err)
 	}
 
 	var resultItems []PipelineItem
-
-	for _, item := range items {
-		var pipelineItem *PipelineItem
+	for _, item := range settings.Items {
+		var pipelineItem PipelineItem
 		var err error
 
 		switch item.Type {
 		case PipelineTypeLevel:
 			var levelSettings LevelSettings
-			pipelineItem, err = createPipelineItem(item.Settings, &levelSettings, PipelineTypeLevel)
+			if err := json.Unmarshal(item.Settings, &levelSettings); err != nil {
+				return fmt.Errorf("parse ScreentoneSettings: %w", err)
+			}
+			pipelineItem = PipelineItem{
+				Type:     PipelineTypeLevel,
+				Settings: levelSettings,
+			}
 		case PipelineTypeResize:
 			var resizeSettings ResizeSettings
-			pipelineItem, err = createPipelineItem(item.Settings, &resizeSettings, PipelineTypeResize)
+			if err := json.Unmarshal(item.Settings, &resizeSettings); err != nil {
+				return fmt.Errorf("parse ScreentoneSettings: %w", err)
+			}
+			pipelineItem = PipelineItem{
+				Type:     PipelineTypeResize,
+				Settings: resizeSettings,
+			}
 		case PipelineTypeScrentone:
 			var screentoneSettings ScreentoneSettings
-			pipelineItem, err = createPipelineItem(item.Settings, &screentoneSettings, PipelineTypeScrentone)
+			if err := json.Unmarshal(item.Settings, &screentoneSettings); err != nil {
+				return fmt.Errorf("parse ScreentoneSettings: %w", err)
+			}
+			pipelineItem = PipelineItem{
+				Type:     PipelineTypeScrentone,
+				Settings: screentoneSettings,
+			}
 		default:
 			return errors.New("undefined item.Type")
 		}
@@ -45,7 +64,7 @@ func (p *PipelineFileSettings) UnmarshalJSON(b []byte) error {
 			return err
 		}
 
-		resultItems = append(resultItems, *pipelineItem)
+		resultItems = append(resultItems, pipelineItem)
 	}
 
 	p.Items = resultItems
@@ -64,8 +83,8 @@ func createPipelineItem(data json.RawMessage, marshallStruct any, pipelineType s
 }
 
 type pipelineItem struct {
-	Type     string
-	Settings json.RawMessage
+	Type     string          `json:"type"`
+	Settings json.RawMessage `json:"settings"`
 }
 
 type PipelineItem struct {
