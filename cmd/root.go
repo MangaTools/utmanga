@@ -14,7 +14,7 @@ var rootCmd = &cobra.Command{
 func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
-	rootCmd.AddCommand(screentoneCmd, resizeCmd)
+	rootCmd.AddCommand(screentoneCmd, resizeCmd, levelCmd)
 }
 
 func Execute() {
