@@ -1,5 +1,5 @@
 package dto
 
 type ScreentoneSettings struct {
-	DotSize int
+	DotSize int `json:"dot_size"`
 }

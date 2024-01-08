@@ -11,10 +11,11 @@ const (
 var ResizeModeList = []string{ResizeModeLanczos, ResizeModeCubic, ResizeModeLinear, ResizeModeBox, ResizeModeNearestNeighbor}
 
 type ResizeSettings struct {
-	Mode string
+	Mode string `json:"mode"`
 
-	Coefficient               int
-	TargetHeigth, TargetWidth int
+	Coefficient  int `json:"coefficient"`
+	TargetHeigth int `json:"target_heigth"`
+	TargetWidth  int `json:"target_width"`
 
-	Steps int
+	Steps int `json:"steps"`
 }
