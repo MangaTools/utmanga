@@ -57,6 +57,6 @@ func init() {
 	levelCmd.PersistentFlags().IntVar(&levelSettings.LowOutput, "low_output", 0, "low output")
 	levelCmd.PersistentFlags().IntVar(&levelSettings.HighOutput, "high_output", 255, "high output")
 
-	levelCmd.PersistentFlags().IntVar(&levelSettings.DiapasonBlack, "diapason_black", 0, "diapason black. 0 = off.")
-	levelCmd.PersistentFlags().IntVar(&levelSettings.DiapasonWhite, "diapason_white", 0, "diapason white. 0 = off.")
+	levelCmd.PersistentFlags().IntVar(&levelSettings.DiapasonBlack, "diapason_black", -1, "diapason black. -1 = off.")
+	levelCmd.PersistentFlags().IntVar(&levelSettings.DiapasonWhite, "diapason_white", -1, "diapason white. -1 = off.")
 }

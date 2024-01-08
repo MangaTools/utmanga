@@ -119,8 +119,8 @@ var (
 		Gamma:         1,
 		LowOutput:     0,
 		HighOutput:    255,
-		DiapasonBlack: 0,
-		DiapasonWhite: 0,
+		DiapasonBlack: -1,
+		DiapasonWhite: -1,
 	}
 
 	screentoneExample = dto.ScreentoneSettings{

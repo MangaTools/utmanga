@@ -60,7 +60,7 @@ func (l *Leveler) Execute(img image.Image) (image.Image, error) {
 }
 
 func (l *Leveler) executeDiapasonBlack(grayImg *image.Gray) {
-	if l.settings.DiapasonBlack == 0 {
+	if l.settings.DiapasonBlack == -1 {
 		return
 	}
 
@@ -95,7 +95,7 @@ func (l *Leveler) executeDiapasonBlack(grayImg *image.Gray) {
 }
 
 func (l *Leveler) executeDiapasonWhite(resultImage *image.Gray, sourceGrayImage *image.Gray) {
-	if l.settings.DiapasonWhite == 0 {
+	if l.settings.DiapasonWhite == -1 {
 		return
 	}
 
